@@ -1,102 +1,125 @@
 type: markdown
 title: 🍽️ Tomorrow's Lunch Menu
 content: >
-  {% set menu_sensor = states('sensor.school_menu') %}
-  {% set today = now().strftime('%Y-%m-%d') %}
-  {% set tomorrow = (now() + timedelta(days=1)).strftime('%Y-%m-%d') %}
+  {% set menu_sensor = states('sensor.school_menu') %} {% set today =
+  now().strftime('%Y-%m-%d') %} {% set tomorrow = (now() +
+  timedelta(days=1)).strftime('%Y-%m-%d') %} {% set days_requested =
+  state_attr('sensor.school_menu', 'days_requested') or 7 %} {% set
+  target_day = namespace(found=false, day_key=none, day_data=none) %} {%
+  for i in range(1, days_requested + 1) %} {% set day_key = 'day_' ~ i
+  %} {% set day_data = state_attr('sensor.school_menu', day_key) %} {%
+  if day_data and day_data.date %} {# Parse the date from the
+  day_data.date (format like "Tuesday, October 22") #} {% set
+  day_date_str = day_data.date %} {# Try to convert to comparable date -
+  this is tricky in Jinja, so we'll use a simpler approach #} {% set
+  day_date_parts = day_date_str.split(', ') %} {% if
+  day_date_parts|length > 1 %} {% set month_day = day_date_parts[1] %}
+  {% set tomorrow_formatted = (now() + timedelta(days=1)).strftime('%B
+  %-d') %} {% if month_day == tomorrow_formatted and day_data.session ==
+  'Lunch' %} {% set target_day.found = true %} {% set target_day.day_key
+  = day_key %} {% set target_day.day_data = day_data %} {% endif %} {%
+  endif %} {% endif %} {% endfor %} {% if target_day.found %}
 
-  {# Get all available days and find tomorrow's lunch #}
-  {% set days_requested = state_attr('sensor.school_menu', 'days_requested') or 7 %}
-  {% set target_day = namespace(found=false, day_key=none, day_data=none) %}
-
-  {% for i in range(1, days_requested + 1) %}
-    {% set day_key = 'day_' ~ i %}
-    {% set day_data = state_attr('sensor.school_menu', day_key) %}
-    {% if day_data and day_data.date %}``
-      {# Parse the date from the day_data.date (format like "Tuesday, October 22") #}
-      {% set day_date_str = day_data.date %}
-      {# Try to convert to comparable date - this is tricky in Jinja, so we'll use a simpler approach #}
-      {% set day_date_parts = day_date_str.split(', ') %}
-      {% if day_date_parts|length > 1 %}
-        {% set month_day = day_date_parts[1] %}
-        {% set tomorrow_formatted = (now() + timedelta(days=1)).strftime('%B %-d') %}
-        {% if month_day == tomorrow_formatted and day_data.session == 'Lunch' %}
-          {% set target_day.found = true %}
-          {% set target_day.day_key = day_key %}
-          {% set target_day.day_data = day_data %}
-        {% endif %}
-      {% endif %}
-    {% endif %}
-  {% endfor %}
-
-  {% if target_day.found %}
-
-  ## 🍽️ {{ target_day.day_data.date }} **{{ target_day.day_data.session }} Menu**
+  ## 🍽️ {{ target_day.day_data.date }} **{{ target_day.day_data.session
+  }} Menu**
 
   ---
 
-  {% set categories = state_attr('sensor.school_menu', target_day.day_key ~ '_categories') %}
-  {% if categories %}
-    {% if categories.get('Main Entree') %}
-  #### 🍽️ **Main Entrees**
+  {% set categories = state_attr('sensor.school_menu',
+  target_day.day_key ~ '_categories') %} {% if categories %} {% if
+  categories.get('Main Entree') %} #### 🍽️ **Main Entrees**
       {% for item in categories['Main Entree'] %}
   - {{ item if item is string else item.name }}
       {% endfor %}
-    {% endif %}
+  {% endif %}
 
-    {% set picture_1_url = state_attr('sensor.school_menu', target_day.day_key ~ '_picture_1_url') %}
-    {% set picture_1_name = state_attr('sensor.school_menu', target_day.day_key ~ '_picture_1_name') %}
-    {% set picture_2_url = state_attr('sensor.school_menu', target_day.day_key ~ '_picture_2_url') %}
-    {% set picture_2_name = state_attr('sensor.school_menu', target_day.day_key ~ '_picture_2_name') %}
+  {% set picture_1_url = state_attr('sensor.school_menu',
+  target_day.day_key ~ '_picture_1_url') %} {% set picture_1_name =
+  state_attr('sensor.school_menu', target_day.day_key ~
+  '_picture_1_name') %} {% set picture_2_url =
+  state_attr('sensor.school_menu', target_day.day_key ~
+  '_picture_2_url') %} {% set picture_2_name =
+  state_attr('sensor.school_menu', target_day.day_key ~
+  '_picture_2_name') %} {% set picture_3_url =
+  state_attr('sensor.school_menu', target_day.day_key ~
+  '_picture_3_url') %} {% set picture_3_name =
+  state_attr('sensor.school_menu', target_day.day_key ~
+  '_picture_3_name') %} {% set picture_4_url =
+  state_attr('sensor.school_menu', target_day.day_key ~
+  '_picture_4_url') %} {% set picture_4_name =
+  state_attr('sensor.school_menu', target_day.day_key ~
+  '_picture_4_name') %} {% set picture_5_url =
+  state_attr('sensor.school_menu', target_day.day_key ~
+  '_picture_5_url') %} {% set picture_5_name =
+  state_attr('sensor.school_menu', target_day.day_key ~
+  '_picture_5_name') %} {% set picture_6_url =
+  state_attr('sensor.school_menu', target_day.day_key ~
+  '_picture_6_url') %} {% set picture_6_name =
+  state_attr('sensor.school_menu', target_day.day_key ~
+  '_picture_6_name') %}
 
-    {% if picture_1_url or picture_2_url %}
+  {# Count how many pictures actually exist #} {% set pictures = [
+    (picture_1_url, picture_1_name),
+    (picture_2_url, picture_2_name),
+    (picture_3_url, picture_3_name),
+    (picture_4_url, picture_4_name),
+    (picture_5_url, picture_5_name),
+    (picture_6_url, picture_6_name)
+  ] %} {% set available_pictures = pictures | selectattr(0) | list %} {%
+  set num_items = categories['Main Entree'] | length if
+  categories.get('Main Entree') else 0 %} {% set max_pics =
+  [available_pictures | length, num_items] | min %}
 
-      {% if picture_1_url %}![{{ picture_1_name }}]({{ picture_1_url }}){% endif %}
-      {% if picture_2_url %}![{{ picture_2_name }}]({{ picture_2_url }}){% endif %}
-    {% endif %}
+  {% if max_pics > 0 %}
+    {% for i in range(max_pics) %}
+      {% set pic = pictures[i] %}
+      ![{{ pic[1] }}]({{ pic[0] }})
+    {% endfor %}
+  {% endif %}
 
   ---
 
-    {% set icons = {'Side': '🥗', 'Vegetable': '🥕', 'Fruit': '🍎', 'Beverages': '🥤', 'Dessert': '🍰'} %}
+  {% set icons = {'Side': '🥗', 'Vegetable': '🥕', 'Fruit': '🍎',
+  'Beverages': '🥤', 'Dessert': '🍰'} %}
     {% for category, items in categories.items() if category != 'Main Entree' and category != 'Other' and category != 'Condiments' and category != 'Milk' and category != 'Fruit Juice' and items %}
-  #### {{ icons.get(category, '🍽️') }} **{{ category }}**
-      {% for item in items %}
-  - {{ item if item is string else item.name }}
-      {% endfor %}
+    #### {{ icons.get(category, '🍽️') }} **{{ category }}**
+    {% for item in items %}
+    - {{ item if item is string else item.name }}
+    {% endfor %}
+
     {% endfor %}
 
     {% if categories.get('Milk') or categories.get('Fruit Juice') %}
   #### 🥤 **Beverages**
-      {% if categories.get('Milk') %}
-        {% for item in categories['Milk'] %}
+
+    {% if categories.get('Milk') %}
+    {% for item in categories['Milk'] %}
   - {{ item if item is string else item.name }}
-        {% endfor %}
-      {% endif %}
-      {% if categories.get('Fruit Juice') %}
-        {% for item in categories['Fruit Juice'] %}
+    {% endfor %}
+    {% endif %}
+    {% if categories.get('Fruit Juice') %}
+    {% for item in categories['Fruit Juice'] %}
   - {{ item if item is string else item.name }}
-        {% endfor %}
-      {% endif %}
+    {% endfor %}
+    {% endif %}
     {% endif %}
   {% else %}
 
   📅 No menu categories available for tomorrow's lunch
 
-  {% endif %}
-  {% else %}
+  {% endif %} {% else %}
 
   📅 No lunch menu available for tomorrow
 
-  {# Debug info - show what's available #}
-  {% if menu_sensor != 'unavailable' %}
+  {# Debug info - show what's available #} {% if menu_sensor !=
+  'unavailable' %}
 
-  **Available sessions:**
-  {% for i in range(1, (days_requested or 7) + 1) %}
+  **Available sessions:** {% for i in range(1, (days_requested or 7) +
+  1) %}
     {% set day_data = state_attr('sensor.school_menu', 'day_' ~ i) %}
     {% if day_data and day_data.date %}
   - {{ day_data.date }} - {{ day_data.session }}
     {% endif %}
-  {% endfor %}
-  {% endif %}
+  {% endfor %} {% endif %}
 
   {% endif %}
