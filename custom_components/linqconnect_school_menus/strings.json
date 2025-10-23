@@ -1,0 +1,32 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "menu_url": "Menu URL (must include buildingId)",
+          "days_to_show": "Number of days to show (1-7)"
+        },
+        "description": "Enter your LinQ Connect school menu URL. The URL must include the buildingId parameter. Example: https://linqconnect.com/public/menu/TFCNC9?buildingId=102de379-aebe-ed11-82b1-d0dc7addf44a",
+        "title": "LinQ Connect School Menus"
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the menu URL or fetch menu data",
+      "invalid_host": "URL must be from linqconnect.com domain",
+      "invalid_building_id": "Building ID not found in URL - URL must include ?buildingId=... parameter",
+      "invalid_menu_id": "Invalid menu URL format - should be like https://linqconnect.com/public/menu/MENUCODE?buildingId=...",
+      "unknown": "Unexpected error occurred"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "days_to_show": "Number of days to show (1-7)"
+        },
+        "description": "Configure how many days of menus to display. Choose between 1 and 7 days.",
+        "title": "LinQ Connect School Menus Options"
+      }
+    }
+  }
+}

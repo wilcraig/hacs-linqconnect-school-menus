@@ -1,0 +1,69 @@
+type: markdown
+title: 📚 Tomorrow's School Menus
+content: >
+  {% set menu_sensor = states('sensor.school_menu') %}
+
+  {# Check if we have multiple sessions for day 2 #}
+  {% set day_2_breakfast = state_attr('sensor.school_menu', 'day_2_breakfast') %}
+  {% set day_2_lunch = state_attr('sensor.school_menu', 'day_2_lunch') %}
+  {% set day_2 = state_attr('sensor.school_menu', 'day_2') %}
+
+  {% if day_2 and day_2.date %}
+
+  # 📅 {{ day_2.date }} School Menus
+
+  {# Show current session first #}
+  {% if day_2.session %}
+  ## {{ '🌅' if day_2.session == 'Breakfast' else '🍽️' }} **{{ day_2.session }} Menu**
+
+  {% set categories = state_attr('sensor.school_menu', 'day_2_categories') %}
+  {% if categories %}
+    {% if categories.get('Main Entree') %}
+  #### 🍽️ **Main Entrees**
+      {% for item in categories['Main Entree'] %}
+  - {{ item if item is string else item.name }}
+      {% endfor %}
+    {% endif %}
+
+    {% set picture_1_url = state_attr('sensor.school_menu', 'day_2_picture_1_url') %}
+    {% set picture_1_name = state_attr('sensor.school_menu', 'day_2_picture_1_name') %}
+    {% set picture_2_url = state_attr('sensor.school_menu', 'day_2_picture_2_url') %}
+    {% set picture_2_name = state_attr('sensor.school_menu', 'day_2_picture_2_name') %}
+
+    {% if picture_1_url or picture_2_url %}
+
+  {% if picture_1_url %}![{{ picture_1_name }}]({{ picture_1_url }}){% endif %}
+  {% if picture_2_url %}![{{ picture_2_name }}]({{ picture_2_url }}){% endif %}
+    {% endif %}
+
+  ---
+
+    {% set icons = {'Side': '🥗', 'Vegetable': '🥕', 'Fruit': '🍎', 'Beverages': '🥤', 'Dessert': '🍰'} %}
+    {% for category, items in categories.items() if category != 'Main Entree' and category != 'Other' and category != 'Condiments' and category != 'Milk' and category != 'Fruit Juice' and items %}
+  #### {{ icons.get(category, '🍽️') }} **{{ category }}**
+      {% for item in items %}
+  - {{ item if item is string else item.name }}
+      {% endfor %}
+    {% endfor %}
+
+    {% if categories.get('Milk') or categories.get('Fruit Juice') %}
+  #### 🥤 **Beverages**
+      {% if categories.get('Milk') %}
+        {% for item in categories['Milk'] %}
+  - {{ item if item is string else item.name }}
+        {% endfor %}
+      {% endif %}
+      {% if categories.get('Fruit Juice') %}
+        {% for item in categories['Fruit Juice'] %}
+  - {{ item if item is string else item.name }}
+        {% endfor %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+  {% endif %}
+
+  {% else %}
+
+  📅 No menu items available for tomorrow
+
+  {% endif %}

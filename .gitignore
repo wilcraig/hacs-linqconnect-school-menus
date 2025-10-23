@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Home Assistant
+*.db
+*.db-shm
+*.db-wal
+*.log
+*.log.*
+*.fault
+
+# Development
+config/
+data/
+*.yaml.backup
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing
+test_*.py
+debug_*.py
+*_debug.*
+menu_response.json
